@@ -9,6 +9,7 @@ JSON definitions retrieved from MDN doc:
 
 (function() {
     var validTransformations = ["date", "symbol", "escape", "regexp"];
+    var compressIgnoreChars = ["\n", "\r", " "];
     var _JSON = JSON;
     var _JSONext = {
         /**
@@ -48,6 +49,34 @@ JSON definitions retrieved from MDN doc:
                 
                 return (replacer == null) ? value : replacer(key, value);
             }, space);
+        },
+
+        /**
+         * Compresses the size of a JSONext string by removing trailing whitespaces, etc.
+         * @param {String} text The JSONext string to compress.
+         */
+        compress: function(text) {
+            var compressed = "";
+            var textfmt = this.process(text); //Remove comments
+            var escape = false;
+            var ltm = 0;
+            for(var x = 0; x < textfmt.length; x++) {
+                if(escape) {
+                    escape = false;
+                    continue;
+                }
+                if((ltm == 0) && compressIgnoreChars.includes(textfmt[x])) continue;
+                compressed += textfmt[x];
+                if(textfmt[x] == '"') {
+                    if((ltm == 1) && (!escape)) {
+                        ltm = 0;
+                        continue;
+                    }
+                    ltm = 1;
+                    continue;
+                }                
+            }
+            return compressed;
         },
 
         /**

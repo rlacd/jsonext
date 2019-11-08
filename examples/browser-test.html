@@ -5,11 +5,20 @@ This document has been created to test the functionality of JSONext.<br>
 <p id="funcs">The following functions are available: <br></p>
 <script>
     var fe = document.getElementById("funcs");
+    var kx = Object.keys(JSONext);
+    
+    kx.sort(function(a,b){
+        if(a < b) { return -1; }
+        if(a > b) { return 1; }
+        return 0;
+    });
 
-    for(var x in JSONext) {
+    for(var x in kx) {
+        var x = kx[x];
         var v = JSONext[x];
         if(typeof v !== "function") continue;
-        fe.innerHTML += `&nbsp;&nbsp;<i>${x}</i><br>`;
+        var a1 = v.toString().split('\n')[0];
+        fe.innerHTML += `&nbsp;&nbsp;<i>${x}(${a1.substring(a1.indexOf('(')+1, a1.lastIndexOf(')'))})</i><br>`;
     }
 </script>
 <p>You may open DevTools now.</p>
