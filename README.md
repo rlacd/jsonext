@@ -30,4 +30,4 @@ var global.JSON = JSONext;
 
 ### Writing JSONext
 
-Refer to file `sample.jsone` for an example of JSONext syntax.
+Refer to file `examples/example-files/full-feature-example.jsone` for an example of JSONext syntax.
