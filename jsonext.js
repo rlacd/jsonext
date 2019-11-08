@@ -74,7 +74,7 @@ JSON definitions retrieved from MDN doc:
                     }
                     ltm = 1;
                     continue;
-                }                
+                }
             }
             return compressed;
         },
