@@ -2,8 +2,6 @@
 JSONext library. Copyright (C) techspider 2019.
 Licensed under GNU GPLv3.
 
-Minified version is available from http://github.com/techspider/jsonext/releases
-
 JSON definitions retrieved from MDN doc:
     - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
     - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
