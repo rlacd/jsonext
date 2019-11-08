@@ -1,0 +1,12 @@
+/*
+Application Configuration File - example file for JSONext
+*/
+
+{
+    // An example section.
+    // This section contains sample values
+    "exampleSection1": {
+        "date": "@T(Date, [11/8/19])",
+        "day": "@T(Symbol, [NaN])"
+    }
+}
