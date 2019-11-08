@@ -1,3 +1,2 @@
 TODO for JSONext
- - Allow user to disable transformations through some sort of configuration
- - Allow user to create a self instantiated version of JSONext.
+ - Allow user to disable transformations through some sort of configuration argument.
