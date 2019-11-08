@@ -1,0 +1,33 @@
+/*
+Sample JSONext file.
+*/
+{ // Inline single line comments
+    "simple_object": { /* Inline multi line comment */
+        "num": 1.2345,
+        "str": "hello world",
+        "bool": true,
+        "empty": null,
+        "array": [
+            "test",
+            1,
+            true
+        ],
+        /*
+        An object demonstrating value transformations to represent unsupported types.
+        */
+        "value_transformations": {
+            "not_a_number": "@T(Symbol, [NaN])",
+            "inf": "@T(Symbol, [Infinity])",
+            "some_date": "@T(Date, [Fri, 08 Nov 2019 17:11:21 GMT])",
+            "reg_exp": "@T(RegExp, [^([A-Z])])",
+            "trans_desc": "@T(Escape, [@T(Symbol, [NaN])])",
+            "value_t_array": [ // An array with value transformations
+                "@T(Symbol, [NaN])",
+                "@T(Date, [Fri, 01 Nov 2019 17:11:21 GMT])",
+                "@T(Symbol, [NaN])",
+                "@T(RegExp, [^([A-Z])])",
+                "@T(RegExp, [^([0-9])])"
+            ]
+        }
+    }
+}

@@ -27,3 +27,7 @@ window.JSON = JSONext;
 delete global.JSON;
 var global.JSON = JSONext;
 ```
+
+### Writing JSONext
+
+Refer to file `sample.jsone` for an example of JSONext syntax.

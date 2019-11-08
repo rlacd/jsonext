@@ -104,6 +104,21 @@ JSON definitions retrieved from MDN doc:
                         case "regexp":
                             value = new RegExp(expression);
                             break;
+                        case "escape":
+                            value = expression;
+                            break;
+                        case "symbol":
+                            switch(expression.toLowerCase()) {
+                                default:
+                                    throw new Error(`"${expression}" is not a recognized symbol specifier.`);
+                                case "nan":
+                                    value = NaN;
+                                    break;
+                                case "infinity":
+                                    value = Infinity;
+                                    break;
+                            }
+                            break;
                     }
                 }
 
