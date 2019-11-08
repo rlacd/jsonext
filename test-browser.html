@@ -1,0 +1,15 @@
+<script src="jsonext.js"></script>
+<h1>JSONext test</h1>
+This document has been created to test the functionality of JSONext.<br>
+<br>
+<p id="funcs">The following functions are available: <br></p>
+<script>
+    var fe = document.getElementById("funcs");
+
+    for(var x in JSONext) {
+        var v = JSONext[x];
+        if(typeof v !== "function") continue;
+        fe.innerHTML += `&nbsp;&nbsp;<i>${x}</i><br>`;
+    }
+</script>
+<p>You may open DevTools now.</p>
