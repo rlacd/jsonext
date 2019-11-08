@@ -1,0 +1,29 @@
+{
+  "name": "jsonext",
+  "version": "1.0.0",
+  "description": "A subset of JSON with support for comments and value transformations.",
+  "main": "jsonext.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/techspider/jsonext.git"
+  },
+  "keywords": [
+    "javascript",
+    "json",
+    "json-comments",
+    "json-parser"
+  ],
+  "author": "techspider",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/techspider/jsonext/issues"
+  },
+  "homepage": "https://github.com/techspider/jsonext#readme"
+}
