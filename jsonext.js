@@ -45,8 +45,6 @@ JSON definitions retrieved from MDN doc:
                 }
                 if(escape) escape = false; // Turn off escape mode if it has been enabled.
                 
-                // Comment conditionals
-                // This section requires 
                 if((x + 1) < procText.length) {
                     if(litType != 0) continue; // Do not process literals.
                     if((procText[x] == '/') && (procText[x + 1] == '/')) { // Single line comment found, ignore
