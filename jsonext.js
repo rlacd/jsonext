@@ -13,13 +13,40 @@ JSON definitions retrieved from MDN doc:
     var _JSON = JSON;
     var _JSONext = {
         /**
+         * Defines a value transformation.
+         * @param {String} type The transformation type.
+         * @param {String} expression The expression to use for the transformation.
+         */
+        defineTransformation: function(type, expression) {
+            return `@T(${type}, [${expression}])`;
+        },
+        
+        /**
          * Converts a JavaScript object or value to a JSON string.
          * @param {*} value The value to convert to a JSON string.
          * @param {Function} [replacer] A function that alters the behavior of the stringification process, or an array of `String` and `Number` objects that serve as a whitelist for selecting/filtering the properties of the value object to be included in the JSON string.
          * @param {String|Number} [space] A `String` or `Number` object that's used to insert white space into the output JSON string for readability purposes.
          */
         stringify: function(value, replacer, space) {
-            return _JSON.stringify(value, replacer, space);
+            if((replacer != null) && (typeof replacer !== 'function'))
+                return _JSON.stringify(value, replacer, space);
+            else return _JSON.stringify(value, function(_key, _value) {
+                var key = _key;
+                var value = _value;
+                
+                if(Number.isNaN(value))
+                    value = _JSONext.defineTransformation("Symbol", "NaN");
+                else if(value instanceof Date)
+                    value = _JSONext.defineTransformation("Date", value.toUTCString());
+                else if(value instanceof RegExp)
+                    value = _JSONext.defineTransformation("RegExp", value.source);
+                else if((typeof value === 'string') && value.startsWith("@T"))
+                    value = _JSONext.defineTransformation("Escape", value);
+                else if(value == Infinity)
+                    value = _JSONext.defineTransformation("Symbol", "Infinity");
+                
+                return (replacer == null) ? value : replacer(key, value);
+            }, space);
         },
 
         /**
