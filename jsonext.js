@@ -1,5 +1,5 @@
 /*
-JSONext library. Copyright (C) mr_chainman (techspider) 2019.
+JSONext library. Copyright (C) techspider 2019.
 Licensed under GNU GPLv3.
 
 Minified version is available from http://github.com/techspider/jsonext/releases
@@ -12,7 +12,12 @@ JSON definitions retrieved from MDN doc:
 (function() {
     var _JSON = JSON;
     var _JSONext = {
-        // ! JSDoc not neccessary
+        /**
+         * Converts a JavaScript object or value to a JSON string.
+         * @param {*} value The value to convert to a JSON string.
+         * @param {Function} [replacer] A function that alters the behavior of the stringification process, or an array of `String` and `Number` objects that serve as a whitelist for selecting/filtering the properties of the value object to be included in the JSON string.
+         * @param {String|Number} [space] A `String` or `Number` object that's used to insert white space into the output JSON string for readability purposes.
+         */
         stringify: function(value, replacer, space) {
             return _JSON.stringify(value, replacer, space);
         },
@@ -44,7 +49,7 @@ JSON definitions retrieved from MDN doc:
                     continue;
                 }
                 if(escape) escape = false; // Turn off escape mode if it has been enabled.
-                
+
                 if((x + 1) < procText.length) {
                     if(litType != 0) continue; // Do not process literals.
                     if((procText[x] == '/') && (procText[x + 1] == '/')) { // Single line comment found, ignore
@@ -69,9 +74,9 @@ JSON definitions retrieved from MDN doc:
         /**
          * Parses the specified JSONext string constructing the JavaScript value or object described by the string.
          * @param {String} text The string to parse as JSONext.
-         * @param {Function} reviver If a function, this prescribes how the value originally produced by parsing is transformed, before being returned.
+         * @param {Function} [reviver] If a function, this prescribes how the value originally produced by parsing is transformed, before being returned.
          * @returns The Object corresponding to the given JSON text.
-         * @throws Throws a `SyntaxError` exception if the string to parse is not valid JSON.
+         * @throws Throws a `SyntaxError` exception if the string to parse is not valid JSON.         
          */
         parse: function(text, reviver) {
             return _JSON.parse(this.process(text), reviver)
