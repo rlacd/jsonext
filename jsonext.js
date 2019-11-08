@@ -48,7 +48,11 @@ JSON definitions retrieved from MDN doc:
                     litType = 0;
                     continue;
                 }
-                if(escape) escape = false; // Turn off escape mode if it has been enabled.
+
+                if(escape) { // Skip char, turn off escape mode if it has been enabled.
+                    escape = false;
+                    continue;
+                } 
 
                 if((x + 1) < procText.length) {
                     if(litType != 0) continue; // Do not process literals.
@@ -79,7 +83,33 @@ JSON definitions retrieved from MDN doc:
          * @throws Throws a `SyntaxError` exception if the string to parse is not valid JSON.         
          */
         parse: function(text, reviver) {
-            return _JSON.parse(this.process(text), reviver)
+            return _JSON.parse(this.process(text), function(_key, _value) {
+                var key = _key;
+                var value = _value;
+
+                // Check for JSONext transformation specifiers in string
+                if((typeof value === 'string') && value.startsWith("@T")) {
+                    // Parse transformation specifier.
+                    try {
+                        var transformation = value.trim();
+                        if((!transformation.startsWith("(")) && (!transformation.endsWith(")"))) throw new SyntaxError("Incomplete transformation specifier for property \"" + key + "\"");
+                        transformation = transformation.substring(3, transformation.length - 1);
+                        var expectedType = transformation.substr(0, transformation.indexOf(',')).toLowerCase();
+                        var expression = transformation.substring(transformation.indexOf("[")+1, transformation.lastIndexOf("]"));    
+                        switch(expectedType) {
+                            default:
+                                throw new Error(`Transformation "${expectedType}" is not supported.`);
+                            case "date":
+                                value = new Date(expression);
+                                break;
+                        }
+                    } catch (e) {
+                        throw new Error("Transformation failed for property \"" + key + "\"");
+                    }
+                }
+
+                return (reviver == null) ? value : reviver(key, value);
+            });
         },
         [Symbol.toStringTag]: "JSONext"
     };
