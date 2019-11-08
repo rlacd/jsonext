@@ -4,9 +4,7 @@
 
 ## What is JSONext?
 
-JSONext (which stands for JSON extended) is a subset of JSON offering support for comments and function serialization. It is currently available in JavaScript and can be used in the browser or as a NodeJS module.
-
-Other programming languages may be targeted at a later stage, although certain features (such as function serialization) may be limited.
+JSONext (which stands for JSON extended) is a subset of JSON offering support for comments and value transformations. It is currently available in JavaScript and can be used in the browser or as a NodeJS module.
 
 ## Getting started
 
