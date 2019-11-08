@@ -1,2 +1,3 @@
 TODO for JSONext
- - Allow user to disable standard transformations through some sort of configuration
+ - Allow user to disable transformations through some sort of configuration
+ - Disallow SHORTFUNCS by default for security purposes.

@@ -90,21 +90,20 @@ JSON definitions retrieved from MDN doc:
                 // Check for JSONext transformation specifiers in string
                 if((typeof value === 'string') && value.startsWith("@T")) {
                     // Parse transformation specifier.
-                    try {
-                        var transformation = value.trim();
-                        if((!transformation.startsWith("(")) && (!transformation.endsWith(")"))) throw new SyntaxError("Incomplete transformation specifier for property \"" + key + "\"");
-                        transformation = transformation.substring(3, transformation.length - 1);
-                        var expectedType = transformation.substr(0, transformation.indexOf(',')).toLowerCase();
-                        var expression = transformation.substring(transformation.indexOf("[")+1, transformation.lastIndexOf("]"));    
-                        switch(expectedType) {
-                            default:
-                                throw new Error(`Transformation "${expectedType}" is not supported.`);
-                            case "date":
-                                value = new Date(expression);
-                                break;
-                        }
-                    } catch (e) {
-                        throw new Error("Transformation failed for property \"" + key + "\"");
+                    var transformation = value.trim();
+                    if((!transformation.startsWith("(")) && (!transformation.endsWith(")"))) throw new SyntaxError("Incomplete transformation specifier for property \"" + key + "\"");
+                    transformation = transformation.substring(3, transformation.length - 1);
+                    var expectedType = transformation.substr(0, transformation.indexOf(',')).toLowerCase();
+                    var expression = transformation.substring(transformation.indexOf("[")+1, transformation.lastIndexOf("]"));    
+                    switch(expectedType) {
+                        default:
+                            throw new Error(`Transformation "${expectedType}" is not supported.`);
+                        case "date":
+                            value = new Date(expression);
+                            break;
+                        case "regexp":
+                            value = new RegExp(expression);
+                            break;
                     }
                 }
 
