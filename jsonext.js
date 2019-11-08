@@ -10,6 +10,7 @@ JSON definitions retrieved from MDN doc:
 */
 
 (function() {
+    var validTransformations = ["date", "symbol", "escape", "regexp"];
     var _JSON = JSON;
     var _JSONext = {
         /**
@@ -18,6 +19,8 @@ JSON definitions retrieved from MDN doc:
          * @param {String} expression The expression to use for the transformation.
          */
         defineTransformation: function(type, expression) {
+            if(!validTransformations.includes(type.toLowerCase()))
+                throw new Error(`The transformation "${type}" is not a valid transformation.`);
             return `@T(${type}, [${expression}])`;
         },
         
