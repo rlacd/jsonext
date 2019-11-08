@@ -1,6 +1,6 @@
 # JSONext
 
-### Copyright (C) techspider 2019. Licensed under GNU GPLv3.
+Copyright (C) techspider 2019. Licensed under GNU GPLv3.
 
 ## What is JSONext?
 
