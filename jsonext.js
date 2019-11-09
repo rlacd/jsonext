@@ -26,7 +26,7 @@ JSON definitions retrieved from MDN doc:
         /**
          * Converts a JavaScript object or value to a JSON string.
          * @param {*} value The value to convert to a JSON string.
-         * @param {Function} [replacer] A function that alters the behavior of the stringification process, or an array of `String` and `Number` objects that serve as a whitelist for selecting/filtering the properties of the value object to be included in the JSON string.
+         * @param {Function|Array} [replacer] A function that alters the behavior of the stringification process, or an array of `String` and `Number` objects that serve as a whitelist for selecting/filtering the properties of the value object to be included in the JSON string.
          * @param {String|Number} [space] A `String` or `Number` object that's used to insert white space into the output JSON string for readability purposes.
          */
         stringify: function(value, replacer, space) {
@@ -52,7 +52,7 @@ JSON definitions retrieved from MDN doc:
         },
 
         /**
-         * Compresses the size of a JSONext string by removing trailing whitespaces, etc.
+         * Compresses the size of a JSONext string by removing trailing whitespaces, comments, etc.
          * @param {String} text The JSONext string to compress.
          */
         compress: function(text) {
