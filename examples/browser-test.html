@@ -19,12 +19,25 @@ The following functions are available:
         var v = JSONext[x];
         if(typeof v !== "function") continue;
         var a1 = v.toString().split('\n')[0];
-        fe.innerHTML += `&nbsp;&nbsp;ƒ <i><span class="fname">${x}</span>(${a1.substring(a1.indexOf('(')+1, a1.lastIndexOf(')'))})</i><br>`;
+        fe.innerHTML += `&nbsp;&nbsp;<span style="color: dodgerblue;">ƒ</span> <i><span class="fname">${x}</span>(${a1.substring(a1.indexOf('(')+1, a1.lastIndexOf(')'))})</i><br>`;
     }
 </script>
+<p>
+    The API documentation can be found <a href="../docs/jsdoc/index.html">here</a>.
+</p>
 <p>You may open DevTools now.</p>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800|Roboto:400,700&display=swap" rel="stylesheet">
 <style>
+a {
+    color: dodgerblue;
+    text-decoration: none;
+    text-decoration-color: none;
+}
+
+a:visited {
+    color: dodgerblue;
+}
+
 body {
     background: #393e46;
     color: #eeeeee;

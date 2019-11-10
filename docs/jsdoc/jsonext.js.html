@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: jsonext.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: jsonext.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+JSONext library. Copyright (C) techspider 2019.
+Licensed under GNU GPLv3.
+
+JSON definitions retrieved from MDN doc:
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
+*/
+
+(function() {
+    var validTransformations = ["date", "symbol", "escape", "regexp"];
+    var compressIgnoreChars = ["\n", "\r", " "];
+    var _JSON = JSON;
+    /**
+     * @exports JSONExt
+     */
+    var _JSONext = {
+        /**
+         * Defines a value transformation.
+         * @param {String} type The transformation type.
+         * @param {String} expression The expression to use for the transformation.
+         */
+        defineVT: function(type, expression) {
+            if((type == null) || (expression == null))
+                throw new Error("Invalid arguments provided.");
+            else if(typeof type !== 'string')
+                throw new Error("Type for argument 'type' must be a String.");
+
+            if(!validTransformations.includes(type.toLowerCase()))
+                throw new Error(`The transformation "${type}" is not a valid transformation.`);
+            return `@T(${type}, [${expression}])`;
+        },
+
+        /**
+         * Resolves an object from a value transformation expression.
+         * @param {String} t_string The expression to resolve.
+         */
+        resolveFromTStr: function(t_string) {
+            if(t_string == null)
+                throw new Error("Invalid arguments provided.");
+            else if(typeof t_string !== 'string')
+                throw new Error("Type for argument 't_string' must be a String.");
+            else if((!t_string.startsWith("(")) &amp;&amp; (!t_string.endsWith(")")))
+                throw new SyntaxError("Invalid transformation string provided.");
+
+            var transformation = t_string;
+            var value = undefined;
+            transformation = transformation.substring(3, transformation.length - 1);
+            var expectedType = transformation.substr(0, transformation.indexOf(',')).toLowerCase();
+            var expression = transformation.substring(transformation.indexOf("[")+1, transformation.lastIndexOf("]"));    
+            switch(expectedType) {
+                default:
+                    throw new Error(`Transformation "${expectedType}" is not supported.`);
+                case "date":
+                    value = new Date(expression);
+                    break;
+                case "regexp":
+                    value = new RegExp(expression);
+                    break;
+                case "escape":
+                    value = expression;
+                    break;
+                case "symbol":
+                    switch(expression.toLowerCase()) {
+                        default:
+                            throw new Error(`"${expression}" is not a recognized symbol specifier.`);
+                        case "nan":
+                            value = NaN;
+                            break;
+                        case "infinity":
+                            value = Infinity;
+                            break;
+                    }
+                    break;
+            }
+            return value;
+        },
+        
+        /**
+         * Converts a JavaScript object or value to a JSON string.
+         * @param {*} value The value to convert to a JSON string.
+         * @param {Function|Array} [replacer] A function that alters the behavior of the stringification process, or an array of `String` and `Number` objects that serve as a whitelist for selecting/filtering the properties of the value object to be included in the JSON string.
+         * @param {String|Number} [space] A `String` or `Number` object that's used to insert white space into the output JSON string for readability purposes.
+         */
+        stringify: function(value, replacer, space) {
+            if(value == null)
+                throw new Error("Invalid arguments provided.");
+
+            if((replacer != null) &amp;&amp; (typeof replacer !== 'function'))
+                return _JSON.stringify(value, replacer, space);
+            else return _JSON.stringify(value, function(_key, _value) {
+                var key = _key;
+                var value = _value;
+                
+                if(Number.isNaN(value))
+                    value = _JSONext.defineVT("Symbol", "NaN");
+                else if(value instanceof Date)
+                    value = _JSONext.defineVT("Date", value.toUTCString());
+                else if(value instanceof RegExp)
+                    value = _JSONext.defineVT("RegExp", value.source);
+                else if((typeof value === 'string') &amp;&amp; value.startsWith("@T"))
+                    value = _JSONext.defineVT("Escape", value);
+                else if(value == Infinity)
+                    value = _JSONext.defineVT("Symbol", "Infinity");
+                
+                return (replacer == null) ? value : replacer(key, value);
+            }, space);
+        },
+
+        /**
+         * Compresses the size of a JSONext string by removing trailing whitespaces, comments, etc.
+         * @param {String} text The JSONext string to compress.
+         */
+        compress: function(text) {
+            if(text == null)
+                throw new Error("Invalid arguments provided.");
+            else if(typeof text !== 'string')
+                throw new Error("Type for argument 'text' must be a String.");
+
+            var compressed = "";
+            var textfmt = this.process(text); //Remove comments
+            var escape = false;
+            var ltm = 0;
+            for(var x = 0; x &lt; textfmt.length; x++) {
+                if(escape) { escape = false; }
+                if((ltm == 1) &amp;&amp; (textfmt[x] == '\\')) {
+                    escape = true;
+                    compressed += textfmt[x] + textfmt[x+1];
+                    x += 1;
+                    continue;
+                }
+                if((ltm == 0) &amp;&amp; compressIgnoreChars.includes(textfmt[x])) continue;
+                compressed += textfmt[x];
+                if(textfmt[x] == '"') {
+                    if((ltm == 1) &amp;&amp; (!escape)) {
+                        ltm = 0;
+                        continue;
+                    }
+                    ltm = 1;
+                    continue;
+                }
+            }
+            return compressed;
+        },
+
+        /**
+         * Formats a JSONext string to standard JSON.
+         * @param {String} text The string to process as JSONext.
+         */
+        process: function(text) {
+            if(text == null)
+                throw new Error("Invalid arguments provided.");
+            else if(typeof text !== 'string')
+                throw new Error("Type for argument 'text' must be a String.");
+
+            var procText = text;
+            var litType = 0;
+            var escape = false;
+
+            // Process the JSON document. Check for single line comments, etc.
+            for(var x = 0; x &lt; procText.length; x++) {
+                if(procText[x] == "\\") { // Check if character is escape character
+                    if(escape) { // If \ character is being escaped, do not treat it as an escape character.
+                        escape = false;
+                        continue;
+                    }
+                    escape = true;
+                    continue;
+                } else if((procText[x] == '"') &amp;&amp; (litType != 1)) { // Check if we are encountering a string literal.
+                    litType = 1; // Switch interpreting mode.
+                    continue;
+                } else if((procText[x] == '"') &amp;&amp; (litType == 1)) { // Check if we encounter a closing quote. It must not be an escape character.
+                    if(escape) continue; // Ignore escape char
+                    litType = 0;
+                    continue;
+                }
+
+                if(escape) { // Skip char, turn off escape mode if it has been enabled.
+                    escape = false;
+                    continue;
+                } 
+
+                if((x + 1) &lt; procText.length) {
+                    if(litType != 0) continue; // Do not process literals.
+                    if((procText[x] == '/') &amp;&amp; (procText[x + 1] == '/')) { // Single line comment found, ignore
+                        var nextNewLine = procText.indexOf('\n', x);
+                        if(nextNewLine == -1) nextNewLine = (procText.length);
+                        var t1 = procText.substring(0, x);
+                        var t2 = procText.substring(nextNewLine, procText.length);
+                        procText = t1 + t2;
+                    } else if((procText[x] == '/') &amp;&amp; (procText[x + 1] == '*')) {
+                        var closingStrIndex = procText.indexOf('*/', x);
+                        if(closingStrIndex == -1) throw new SyntaxError("Failed to parse JSONext, missing matching */ for multi line comment at char " + (x+1));
+                        var t1 = procText.substring(0, x);
+                        var t2 = procText.substring(closingStrIndex+2, procText.length);
+                        procText = t1 + t2;
+                        x = x - 1;
+                    }
+                }
+            }
+            return procText;
+        },
+
+        /**
+         * Parses the specified JSONext string constructing the JavaScript value or object described by the string.
+         * @param {String} text The string to parse as JSONext.
+         * @param {Function} [reviver] If a function, this prescribes how the value originally produced by parsing is transformed, before being returned.
+         * @returns The Object corresponding to the given JSON text.
+         * @throws Throws a `SyntaxError` exception if the string to parse is not valid JSON.         
+         */
+        parse: function(text, reviver) {
+            if(text == null)
+                throw new Error("Invalid arguments provided.");
+
+            return _JSON.parse(this.process(text), function(_key, _value) {
+                var key = _key;
+                var value = _value;
+
+                // Check for JSONext transformation specifiers in string
+                if((typeof value === 'string') &amp;&amp; value.startsWith("@T")) {
+                    // Parse transformation specifier.
+                    var transformation = value.trim();
+                    if((!transformation.startsWith("(")) &amp;&amp; (!transformation.endsWith(")"))) throw new SyntaxError("Incomplete transformation specifier for property \"" + key + "\"");
+                    var tt = undefined;
+                    if((tt = _JSONext.resolveFromTStr(transformation)) !== undefined)
+                        value = tt;
+                }
+
+                return (reviver == null) ? value : reviver(key, value);
+            });
+        },
+        [Symbol.toStringTag]: "JSONext"
+    };
+    if(typeof window !== 'undefined')
+        window.JSONext = _JSONext;
+    else module.exports = _JSONext;
+})();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-JSONExt.html">JSONExt</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 10 2019 13:42:34 GMT+0400 (Arabian Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
