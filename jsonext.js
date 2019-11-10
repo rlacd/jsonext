@@ -17,13 +17,56 @@ JSON definitions retrieved from MDN doc:
          * @param {String} type The transformation type.
          * @param {String} expression The expression to use for the transformation.
          */
-        defineTransformation: function(type, expression) {
+        defineVT: function(type, expression) {
             if((type == null) || (expression == null))
                 throw new Error("Invalid arguments provided.");
 
             if(!validTransformations.includes(type.toLowerCase()))
                 throw new Error(`The transformation "${type}" is not a valid transformation.`);
             return `@T(${type}, [${expression}])`;
+        },
+
+        /**
+         * Resolves an object from a value transformation expression.
+         * @param {String} t_string The expression to resolve.
+         */
+        resolveFromTStr: function(t_string) {
+            if(t_string == null)
+                throw new Error("Invalid arguments provided.");
+            else if((!t_string.startsWith("(")) && (!t_string.endsWith(")")))
+                throw new SyntaxError("Invalid transformation string provided.");
+
+            var transformation = t_string;
+            var value = undefined;
+            transformation = transformation.substring(3, transformation.length - 1);
+            var expectedType = transformation.substr(0, transformation.indexOf(',')).toLowerCase();
+            var expression = transformation.substring(transformation.indexOf("[")+1, transformation.lastIndexOf("]"));    
+            switch(expectedType) {
+                default:
+                    throw new Error(`Transformation "${expectedType}" is not supported.`);
+                case "date":
+                    value = new Date(expression);
+                    break;
+                case "regexp":
+                    value = new RegExp(expression);
+                    break;
+                case "escape":
+                    value = expression;
+                    break;
+                case "symbol":
+                    switch(expression.toLowerCase()) {
+                        default:
+                            throw new Error(`"${expression}" is not a recognized symbol specifier.`);
+                        case "nan":
+                            value = NaN;
+                            break;
+                        case "infinity":
+                            value = Infinity;
+                            break;
+                    }
+                    break;
+            }
+            return value;
         },
         
         /**
@@ -43,15 +86,15 @@ JSON definitions retrieved from MDN doc:
                 var value = _value;
                 
                 if(Number.isNaN(value))
-                    value = _JSONext.defineTransformation("Symbol", "NaN");
+                    value = _JSONext.defineVT("Symbol", "NaN");
                 else if(value instanceof Date)
-                    value = _JSONext.defineTransformation("Date", value.toUTCString());
+                    value = _JSONext.defineVT("Date", value.toUTCString());
                 else if(value instanceof RegExp)
-                    value = _JSONext.defineTransformation("RegExp", value.source);
+                    value = _JSONext.defineVT("RegExp", value.source);
                 else if((typeof value === 'string') && value.startsWith("@T"))
-                    value = _JSONext.defineTransformation("Escape", value);
+                    value = _JSONext.defineVT("Escape", value);
                 else if(value == Infinity)
-                    value = _JSONext.defineTransformation("Symbol", "Infinity");
+                    value = _JSONext.defineVT("Symbol", "Infinity");
                 
                 return (replacer == null) ? value : replacer(key, value);
             }, space);
@@ -164,34 +207,9 @@ JSON definitions retrieved from MDN doc:
                     // Parse transformation specifier.
                     var transformation = value.trim();
                     if((!transformation.startsWith("(")) && (!transformation.endsWith(")"))) throw new SyntaxError("Incomplete transformation specifier for property \"" + key + "\"");
-                    transformation = transformation.substring(3, transformation.length - 1);
-                    var expectedType = transformation.substr(0, transformation.indexOf(',')).toLowerCase();
-                    var expression = transformation.substring(transformation.indexOf("[")+1, transformation.lastIndexOf("]"));    
-                    switch(expectedType) {
-                        default:
-                            throw new Error(`Transformation "${expectedType}" is not supported.`);
-                        case "date":
-                            value = new Date(expression);
-                            break;
-                        case "regexp":
-                            value = new RegExp(expression);
-                            break;
-                        case "escape":
-                            value = expression;
-                            break;
-                        case "symbol":
-                            switch(expression.toLowerCase()) {
-                                default:
-                                    throw new Error(`"${expression}" is not a recognized symbol specifier.`);
-                                case "nan":
-                                    value = NaN;
-                                    break;
-                                case "infinity":
-                                    value = Infinity;
-                                    break;
-                            }
-                            break;
-                    }
+                    var tt = undefined;
+                    if((tt = _JSONext.resolveFromTStr(transformation)) !== undefined)
+                        value = tt;
                 }
 
                 return (reviver == null) ? value : reviver(key, value);
