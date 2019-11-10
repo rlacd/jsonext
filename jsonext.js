@@ -122,8 +122,11 @@ JSON definitions retrieved from MDN doc:
             var escape = false;
             var ltm = 0;
             for(var x = 0; x < textfmt.length; x++) {
-                if(escape) {
-                    escape = false;
+                if(escape) { escape = false; }
+                if((ltm == 1) && (textfmt[x] == '\\')) {
+                    escape = true;
+                    compressed += textfmt[x] + textfmt[x+1];
+                    x += 1;
                     continue;
                 }
                 if((ltm == 0) && compressIgnoreChars.includes(textfmt[x])) continue;
