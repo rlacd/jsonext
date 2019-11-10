@@ -18,6 +18,9 @@ JSON definitions retrieved from MDN doc:
          * @param {String} expression The expression to use for the transformation.
          */
         defineTransformation: function(type, expression) {
+            if((type == null) || (expression == null))
+                throw new Error("Invalid arguments provided.");
+
             if(!validTransformations.includes(type.toLowerCase()))
                 throw new Error(`The transformation "${type}" is not a valid transformation.`);
             return `@T(${type}, [${expression}])`;
@@ -30,6 +33,9 @@ JSON definitions retrieved from MDN doc:
          * @param {String|Number} [space] A `String` or `Number` object that's used to insert white space into the output JSON string for readability purposes.
          */
         stringify: function(value, replacer, space) {
+            if(value == null)
+                throw new Error("Invalid arguments provided.");
+
             if((replacer != null) && (typeof replacer !== 'function'))
                 return _JSON.stringify(value, replacer, space);
             else return _JSON.stringify(value, function(_key, _value) {
@@ -56,6 +62,9 @@ JSON definitions retrieved from MDN doc:
          * @param {String} text The JSONext string to compress.
          */
         compress: function(text) {
+            if(text == null)
+                throw new Error("Invalid arguments provided.");
+
             var compressed = "";
             var textfmt = this.process(text); //Remove comments
             var escape = false;
@@ -84,6 +93,9 @@ JSON definitions retrieved from MDN doc:
          * @param {String} text The string to process as JSONext.
          */
         process: function(text) {
+            if(text == null)
+                throw new Error("Invalid arguments provided.");
+
             var procText = text;
             var litType = 0;
             var escape = false;
@@ -140,6 +152,9 @@ JSON definitions retrieved from MDN doc:
          * @throws Throws a `SyntaxError` exception if the string to parse is not valid JSON.         
          */
         parse: function(text, reviver) {
+            if(text == null)
+                throw new Error("Invalid arguments provided.");
+
             return _JSON.parse(this.process(text), function(_key, _value) {
                 var key = _key;
                 var value = _value;
