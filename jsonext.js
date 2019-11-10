@@ -114,7 +114,7 @@ JSON definitions retrieved from MDN doc:
         compress: function(text) {
             if(text == null)
                 throw new Error("Invalid arguments provided.");
-            else if(typeof type !== 'string')
+            else if(typeof text !== 'string')
                 throw new Error("Type for argument 'text' must be a String.");
 
             var compressed = "";
@@ -147,6 +147,8 @@ JSON definitions retrieved from MDN doc:
         process: function(text) {
             if(text == null)
                 throw new Error("Invalid arguments provided.");
+            else if(typeof text !== 'string')
+                throw new Error("Type for argument 'text' must be a String.");
 
             var procText = text;
             var litType = 0;
