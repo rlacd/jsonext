@@ -20,6 +20,8 @@ JSON definitions retrieved from MDN doc:
         defineVT: function(type, expression) {
             if((type == null) || (expression == null))
                 throw new Error("Invalid arguments provided.");
+            else if(typeof type !== 'string')
+                throw new Error("Type for argument 'type' must be a String.");
 
             if(!validTransformations.includes(type.toLowerCase()))
                 throw new Error(`The transformation "${type}" is not a valid transformation.`);
@@ -33,6 +35,8 @@ JSON definitions retrieved from MDN doc:
         resolveFromTStr: function(t_string) {
             if(t_string == null)
                 throw new Error("Invalid arguments provided.");
+            else if(typeof t_string !== 'string')
+                throw new Error("Type for argument 't_string' must be a String.");
             else if((!t_string.startsWith("(")) && (!t_string.endsWith(")")))
                 throw new SyntaxError("Invalid transformation string provided.");
 
@@ -107,6 +111,8 @@ JSON definitions retrieved from MDN doc:
         compress: function(text) {
             if(text == null)
                 throw new Error("Invalid arguments provided.");
+            else if(typeof type !== 'string')
+                throw new Error("Type for argument 'text' must be a String.");
 
             var compressed = "";
             var textfmt = this.process(text); //Remove comments
