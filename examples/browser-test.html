@@ -1,12 +1,13 @@
 <script src="../jsonext.js"></script>
-<h1>JSONext test</h1>
+<h1>++ JSONext test ++</h1>
 This document has been created to test the functionality of JSONext.<br>
 <br>
-<p id="funcs">The following functions are available: <br></p>
+The following functions are available: 
+<p id="funcs"><br></p>
 <script>
     var fe = document.getElementById("funcs");
     var kx = Object.keys(JSONext);
-    
+
     kx.sort(function(a,b){
         if(a < b) { return -1; }
         if(a > b) { return 1; }
@@ -18,7 +19,30 @@ This document has been created to test the functionality of JSONext.<br>
         var v = JSONext[x];
         if(typeof v !== "function") continue;
         var a1 = v.toString().split('\n')[0];
-        fe.innerHTML += `&nbsp;&nbsp;<i>${x}(${a1.substring(a1.indexOf('(')+1, a1.lastIndexOf(')'))})</i><br>`;
+        fe.innerHTML += `&nbsp;&nbsp;ƒ <i><span class="fname">${x}</span>(${a1.substring(a1.indexOf('(')+1, a1.lastIndexOf(')'))})</i><br>`;
     }
 </script>
 <p>You may open DevTools now.</p>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800|Roboto:400,700&display=swap" rel="stylesheet">
+<style>
+body {
+    background: #393e46;
+    color: #eeeeee;
+    font-family: Roboto;
+}
+
+h1 {
+    font-family: "Open Sans";
+    font-weight: 900;
+    color: #f7be16;
+}
+
+.fname {
+    color: #5eb7b7;
+}
+
+#funcs {
+    margin-top: 0;
+    font-family: monospace;
+}
+</style>
