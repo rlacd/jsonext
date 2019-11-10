@@ -11,6 +11,9 @@ JSON definitions retrieved from MDN doc:
     var validTransformations = ["date", "symbol", "escape", "regexp"];
     var compressIgnoreChars = ["\n", "\r", " "];
     var _JSON = JSON;
+    /**
+     * @exports JSONExt
+     */
     var _JSONext = {
         /**
          * Defines a value transformation.
